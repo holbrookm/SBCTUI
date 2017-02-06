@@ -1,0 +1,99 @@
+conf ter
+system 
+network-interface 
+name M00
+sub-port-id $VLANID
+description "$NAME $ECID.ngv.eircom.net"
+ip-address $CLD_IP
+pri-utility-addr $CLD_PRIMARY_IP
+sec-utility-addr $CLD_SECONDARY_IP
+netmask $NETMASK
+gateway $CLD_GATEWAY
+done
+exit
+exit
+
+media-manager 
+realm-config 
+identifier $ECID.ngv.eircom.net
+description "$NAME $ECID.ngv.eircom.net"
+network-interfaces M00:$VLANID.4
+mm-in-realm enabled
+media-policy rtpsiptoscodes
+out-manipulationid enterprise-fixup
+manipulation-string ngv.eircom.net
+class-profile sipqosmarking
+access-control-trust-level high
+trunk-context $LWRCASE_ECID.ngv.eircom.net
+codec-policy g722_g711_g729_amrwb
+invalid-signal-threshold 5
+maximum-signal-threshold 100
+untrusted-signal-threshold 10
+deny-period 60
+done
+exit
+exit
+
+session-router 
+sip-interface 
+realm-id $ECID.ngv.eircom.net
+description "$NAME $ECID.ngv.eircom.net"
+state enabled
+sip-ports 
+address $CLD_IP
+port 5060
+transport-protocol UDP
+allow-anonymous agents-only
+done
+address $CLD_IP
+port 5060
+transport-protocol TCP
+allow-anonymous agents-only
+done
+exit
+proxy-mode Proxy
+redirect-action Proxy
+nat-traversal always
+nat-interval 60
+tcp-nat-interval 60
+registration-caching enabled
+min-reg-expire 1800
+registration-interval 1800
+route-to-registrar enabled
+options +preserve-user-info
+options +strip-route-headers
+options +via-header-transparency
+trust-mode agents-only
+max-nat-interval 3600
+sip-ims-feature enabled
+network-id ngv.eircom.net
+done
+exit
+exit
+
+media-manager 
+steering-pool 
+ip-address $CLD_IP
+start-port 30000
+end-port 49999
+realm-id $ECID.ngv.eircom.net
+network-interface M00:$VLANID.4
+done
+exit
+exit
+
+session-router 
+local-policy 
+from-address *
+to-address *
+source-realm $ECID.ngv.eircom.net
+description "$NAME $ECID.ngv.eircom.net"
+state enabled
+next-hop sag:core-ICSCF
+realm Core_Realm_Non_Reg
+terminate-recursion disabled
+app-protocol SIP
+done
+exit
+exit
+exit
