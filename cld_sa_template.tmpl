@@ -1,0 +1,45 @@
+session-agent
+hostname {0}-{1}-SA{2}
+ip-address {3}
+port 5060
+state enabled
+app-protocol SIP
+transport-method UDP
+realm-id {0}.ngv.eircom.net
+description "{4} {0}.ngv.eircom.net SA{2}"
+proxy-mode Proxy
+redirect-action Proxy
+trust-me enabled
+in-manipulationid {0}\_{1}\_SM{2}
+trunk-group {1}-TG{2}
+stop-recurse 401,407
+max-register-sustain-rate 60
+register-burst-window 1
+sustain-rate-window 10
+done
+exit
+sip-manipulation 
+name {0}\_{1}\_SM{2}
+description "{4} {0}.ngv.eircom.net"
+header-rules 
+name enterprise_fixup
+header-name to
+action sip-manip
+msg-type any
+new-value TGRP_Enterprise_Common
+done
+name pai_fixup
+header-name to
+action sip-manip 
+msg-type request
+new-value PAI_Fixup
+done
+name add_psi_prefix
+header-name to 
+action sip-manip
+msg-type request
+new-value add_psi_prefix_Retail
+done
+exit
+done
+exit
