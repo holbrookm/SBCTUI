@@ -1,0 +1,102 @@
+conf ter
+system 
+network-interface 
+name M00
+sub-port-id {0}
+description "{1} {2}-HO.ngv.eircom.net"
+ip-address {3}
+pri-utility-addr {4}
+sec-utility-addr {5}
+netmask {6}
+gateway {7}
+done
+exit
+exit
+
+media-manager 
+realm-config 
+identifier {2}-HO.ngv.eircom.net
+description "{1} {2}.ngv.eircom.net"
+network-interfaces M00:{0}.4
+mm-in-realm enabled
+mm-same-ip disabled
+media-policy rtpsiptoscodes
+in-manipulationid HO_Internet_in
+out-manipulationid HO_Internet_out
+manipulation-string ngv.eircom.net
+class-profile sipqosmarking
+access-control-trust-level low
+codec-policy g722_g711_g729_amrwb
+invalid-signal-threshold 30
+maximum-signal-threshold 160
+untrusted-signal-threshold 30
+deny-period 60
+done
+exit
+exit
+
+session-router 
+sip-interface 
+realm-id {2}-HO.ngv.eircom.net
+description "{1} {2}-HO.ngv.eircom.net"
+state enabled
+sip-ports 
+address {8}
+port 5060
+transport-protocol UDP
+allow-anonymous registered
+done
+address {8}
+port 5060
+transport-protocol TCP
+allow-anonymous registered
+done
+exit
+proxy-mode Proxy
+redirect-action Proxy
+nat-traversal always
+nat-interval 60
+tcp-nat-interval 720
+registration-caching enabled
+min-reg-expire 900
+registration-interval 900
+route-to-registrar enabled
+secured-network enabled
+options +reg-local-expires
+options +strip-route-headers
+options +via-header-transparency
+trust-mode registered
+max-nat-interval 3600
+sip-ims-feature enabled
+network-id ngv.eircom.net
+tcp-keepalive enabled
+done
+exit
+exit
+
+media-manager 
+steering-pool 
+ip-address {8}
+start-port 30000
+end-port 49999
+realm-id {2}-HO.ngv.eircom.net
+network-interface M00:{0}.4
+done
+exit
+exit
+
+session-router 
+local-policy 
+from-address *
+to-address *
+source-realm {2}-HO.ngv.eircom.net
+description "{1} {2}-HO.ngv.eircom.net"
+state enabled
+next-hop sag:core-ICSCF
+realm Core_Realm_Reg
+terminate-recursion disabled
+app-protocol SIP
+done
+exit
+exit
+exit
